@@ -142,6 +142,7 @@ func NewNode(appPath string, options *MobileNodeOptions) (*MobileNode, error) {
 	dataDir := filepath.Join(appPath, ".mysterium")
 	currentDir := appPath
 
+	config.Current.SetDefault(config.FlagTestnet2.Name, options.Testnet2)
 	config.Current.SetDefault(config.FlagChainID.Name, options.ChainID)
 	config.Current.SetDefault(config.FlagDefaultCurrency.Name, metadata.DefaultNetwork.DefaultCurrency)
 	config.Current.SetDefault(config.FlagPaymentsConsumerPricePerGBUpperBound.Name, metadata.DefaultNetwork.Payments.Consumer.PricePerGIBMax)
@@ -273,6 +274,11 @@ func NewNode(appPath string, options *MobileNodeOptions) (*MobileNode, error) {
 	}
 
 	return mobileNode, nil
+}
+
+// IsTestnet2 returns whether node is running in testnet2
+func (mb *MobileNode) IsTestnet2() bool {
+	return config.Current.GetBool(config.FlagTestnet2.Name)
 }
 
 // GetConsumerPaymentConfig returns consumer payment config
