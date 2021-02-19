@@ -17,37 +17,12 @@
 
 package sleep
 
-// #cgo LDFLAGS: -framework CoreFoundation -framework IOKit
-// void NotifyWake();
-// void NotifySleep();
-// #include "darwin.h"
-import "C"
-
-import (
-	"github.com/rs/zerolog/log"
-)
-
 // Start starts events notifier
 func (n *Notifier) Start() {
-	log.Debug().Msg("Register for sleep events")
 
-	go C.registerNotifications()
-
-	for {
-		select {
-		case e := <-eventChannel:
-			n.eventBus.Publish(AppTopicSleepNotification, e)
-		case <-n.stop:
-			break
-		}
-	}
 }
 
 // Stop stops events notifier
 func (n *Notifier) Stop() {
-	n.stopOnce.Do(func() {
-		log.Debug().Msg("Unregister sleep events")
-		C.unregisterNotifications()
-		close(n.stop)
-	})
+
 }

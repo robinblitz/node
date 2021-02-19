@@ -2,10 +2,7 @@ stages:
   - prepare
   - test
   - pre-release
-  - build
-  - release-snapshot
-  - release-tag
-  - post-release
+  - build-ios
 
 variables:
   BUILD_COMMIT: $CI_COMMIT_SHORT_SHA
@@ -57,15 +54,14 @@ test:
         bash <(curl -s https://codecov.io/bash)
       fi
 
-test-e2e-basic:
-  stage: test
-  tags: [go,high_performance]
-  script: go run mage.go -v TestE2EBasic
-
-test-e2e-nat:
-  stage: test
-  tags: [go,high_performance]
-  script: go run mage.go -v TestE2ENAT
+#  stage: test
+#  tags: [go,high_performance]
+#  script: go run mage.go -v TestE2EBasic
+#
+#test-e2e-nat:
+#  stage: test
+#  tags: [go,high_performance]
+#  script: go run mage.go -v TestE2ENAT
 
 # with the new payments, we're making a breaking change, so no compatibility for now
 # test-e2e-compatibility:
@@ -85,118 +81,11 @@ create-bucket:
   tags: [go]
   script: go run mage.go -v MakeBucket
 
-package:linux-amd64:
-  stage: build
-  tags: [go]
-  script: go run mage.go -v PackageLinuxAmd64
-
-package:linux-arm:
-  stage: build
-  tags: [go]
-  script: go run mage.go -v PackageLinuxArm
-
-package:linux-debian-amd64:
-  stage: build
-  tags: [go]
-  script: go run mage.go -v PackageLinuxDebianAmd64
-
-package:linux-debian-arm:
-  stage: build
-  tags: [go]
-  script: go run mage.go -v PackageLinuxDebianArm
-
-package:linux-debian-arm64:
-  stage: build
-  tags: [go]
-  script: go run mage.go -v PackageLinuxDebianArm64
-
-package:linux-raspberry-image:
-  stage: build
-  tags: [go,high_performance]
-  script: go run mage.go -v PackageLinuxRaspberryImage
-
-package:macos-amd64:
-  stage: build
-  tags: [go]
-  script: go run mage.go -v PackageMacOSAmd64
-
-package:windows-amd64:
-   stage: build
-   tags: [go]
-   script: go run mage.go -v PackageWindowsAmd64
-
 package:ios:
-  stage: build
+  stage: build-ios
   tags: [go]
   script: go run mage.go -v PackageIOS
+  artifacts:
+    paths:
+      [build/package]
 
-package:android:
-  stage: build
-  tags: [go]
-  script: go run mage.go -v PackageAndroid
-
-package:docker-alpine:
-  stage: build
-  tags: [go]
-  script: go run mage.go -v PackageDockerAlpine
-
-package:swagger-redoc-docker:
-  stage: build
-  tags: [go]
-  script: go run mage.go -v PackageDockerSwaggerRedoc
-
-release-snapshot:release:
-  stage: release-snapshot
-  tags: [go]
-  script: go run mage.go -v ReleaseGithubSnapshot
-
-release-snapshot:docker:
-  stage: release-snapshot
-  tags: [go]
-  script: go run mage.go -v ReleaseDockerSnapshot
-
-release-snapshot:debian-ppa:
-  stage: release-snapshot
-  tags: [go]
-  script: go run mage.go -v ReleaseDebianPPASnapshot
-  only:
-    - master
-
-release-snapshot:goreport:
-  stage: release-snapshot
-  tags: [go]
-  script: bin/release_goreport
-  only:
-    - master
-
-release-snapshot:android-sdk:
-  stage: release-snapshot
-  tags: [go]
-  script: go run mage.go -v ReleaseAndroidSDKSnapshot
-  only:
-    - master
-
-release-tag:release:
-  stage: release-tag
-  tags: [go]
-  script: go run mage.go -v ReleaseGithubTag
-
-release-tag:docker:
-  stage: release-tag
-  tags: [go]
-  script: go run mage.go -v ReleaseDockerTag
-
-release-tag:debian-ppa:
-  stage: release-tag
-  tags: [go]
-  script: go run mage.go -v ReleaseDebianPPAPreRelease
-
-release-tag:android-sdk:
-  stage: release-tag
-  tags: [go]
-  script: go run mage.go -v ReleaseAndroidSDK
-
-remove-bucket:
-  stage: post-release
-  tags: [go]
-  script: go run mage.go -v RemoveBucket

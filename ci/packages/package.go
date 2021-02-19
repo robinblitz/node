@@ -131,11 +131,6 @@ func PackageWindowsAmd64() error {
 
 // PackageIOS builds and stores iOS package
 func PackageIOS() error {
-	job.Precondition(func() bool {
-		pr, _ := env.IsPR()
-		fullBuild, _ := env.IsFullBuild()
-		return !pr || fullBuild
-	})
 	logconfig.Bootstrap()
 	mg.Deps(vendordModules)
 
