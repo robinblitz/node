@@ -31,7 +31,7 @@ docker run --rm \
     -e FLAG_TAGS= \
     -e FLAG_LDFLAGS="-w -s $(get_linker_ldflags)" \
     -e FLAG_BUILDMODE=default \
-    -e TARGETS=ios/. \
+    -e TARGETS=ios/arm64 \
     -e EXT_GOPATH=/ext-go/1 \
     -e GO111MODULE=off \
     mysteriumnetwork/xgo:1.13.1 github.com/mysteriumnetwork/node/mobile/mysterium
